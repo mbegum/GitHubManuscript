@@ -1,0 +1,141 @@
+#### Subgroup analysis for chronic diseases
+
+library(partykit)
+
+### Diabetes
+
+glm.tree.diabetes=glmtree(diabetes~CRF | age+sex+bmi+trig+obesity+glucose+
+                            total_cholesterol+dyslipidemia+hypertension+inactivity+smoker, family=binomial,minsize=200,prune="BIC",maxdepth=4)
+print(glm.tree.diabetes)
+
+print(glm.tree.diabetes, node=1)
+
+print(glm.tree.diabetes, node=2)
+
+plot(glm.tree.diabetes) ## Tree
+plot(glm.tree.diabetes, tp_args = list(cdplot=TRUE))
+plot(glm.tree.diabetes, terminal_panel = NULL)## treatment estimate
+
+### All individuals
+all_d=glm(diabetes~CRF, family  = binomial(link = "logit"))
+summary(all_d)
+confint(all_d)
+
+### Subgroups
+#Sub1
+sd1=subset(dat,glucose<=119 & obesity==0)
+dim(sd1)
+sd1_d=glm(diabetes~CRF,data = sd1, family  = binomial(link = "logit"))
+summary(sd1_d)
+confint(sd1_d)
+
+#Sub2
+sd2=subset(dat,glucose<=119 & obesity==1)
+dim(sd2)
+sd2_d=glm(diabetes~CRF,data = sd2, family  = binomial(link = "logit"))
+summary(sd2_d)
+confint(sd2_d)
+
+#Sub3
+sd3=subset(dat,glucose>119 )
+dim(sd3)
+sd3_d=glm(diabetes~CRF,data = sd3, family  = binomial(link = "logit"))
+summary(sd3_d)
+confint(sd3_d)
+ 
+## Hypertension
+
+glm.tree.hp.CRF=glmtree(hypertension~ CRF| age+sex+weight+bmi+trig+obesity+glucose+
+                          total_cholesterol+dyslipidemia+inactivity+smoker+diabetes, family=binomial,minsize=500,maxdepth=3,prune="BIC")
+print(glm.tree.hp.CRF)
+
+print(glm.tree.hp.CRF, node=1)
+
+print(glm.tree.hp.CRF, node=2)
+
+plot(glm.tree.hp.CRF) ## Tree
+plot(glm.tree.hp.CRF, tp_args = list(cdplot=TRUE))
+plot(glm.tree.hp.CRF, terminal_panel = NULL)## treatment estimate
+
+### subgroup
+all_h=glm(hypertension~CRF, family  = binomial(link = "logit"))
+summary(all_h)
+confint(all_h)
+
+#Sub1
+sh1=subset(dat,age<=49 & weight<=185.5)
+dim(sh1)
+sh1_g=glm(hypertension~CRF,data = sh1, family  = binomial(link = "logit"))
+summary(sh1_g)
+confint(sh1_g)
+
+
+#Sub2
+sh2=subset(dat,age<=49 & weight>185.5)
+dim(sh2)
+sh2_g=glm(hypertension~CRF,data = sh2, family  = binomial(link = "logit"))
+summary(sh2_g)
+confint(sh2_g)
+
+#Sub3
+sh3=subset(dat,age>49 & bmi<=27.1)
+dim(sh3)
+sh3_g=glm(hypertension~CRF,data = sh3, family  = binomial(link = "logit"))
+summary(sh3_g)
+confint(sh3_g)
+
+
+#Sub4
+sh4=subset(dat,age>49 & bmi>27.1)
+dim(sh4)
+sh4_g=glm(hypertension~CRF,data = sh4, family  = binomial(link = "logit"))
+summary(sh4_g)
+confint(sh4_g)
+
+### dyslipidemia
+
+
+glm.tree.lipid.fit=glmtree(dyslipidemia~CRF | age+sex+weight+bmi+trig+obesity+glucose+
+                             total_cholesterol+hypertension+inactivity+smoker+diabetes,data=dat, family=binomial,minsize=500, prune="BIC",maxdepth=4)
+print(glm.tree.lipid.fit)
+
+print(glm.tree.lipid.fit, node=1)
+
+print(glm.tree.lipid.fit, node=2)
+
+plot(glm.tree.lipid.fit) ## Tree
+plot(glm.tree.lipid.fit, tp_args = list(cdplot=TRUE))
+plot(glm.tree.lipid.fit, terminal_panel = NULL)## treatment estimate
+
+### subgroup
+all_dys=glm(dyslipidemia~CRF,data=dat, family  = binomial(link = "logit"))
+summary(all_dys)
+confint(all_dys)
+
+#Sub1
+sdys1=subset(dat,total_cholesterol<=198.7 & sex== "Female")
+dim(sdys1)
+sdys1_g=glm(dyslipidemia~CRF,data = sdys1, family  = binomial(link = "logit"))
+summary(sdys1_g)
+confint(sdys1_g)
+
+#Sub2
+sdys2=subset(dat,total_cholesterol<=198.7 & sex== "Male")
+dim(sdys2)
+sdys2_g=glm(dyslipidemia~CRF,data = sdys2, family  = binomial(link = "logit"))
+summary(sdys2_g)
+confint(sdys2_g)
+
+#Sub3
+sdys3=subset(dat,total_cholesterol>198.7 & trig<=103.2)
+dim(sdys3)
+sdys3_g=glm(dyslipidemia~CRF,data = sdys3, family  = binomial(link = "logit"))
+summary(sdys3_g)
+confint(sdys3_g)
+
+#Sub4
+sdys4=subset(dat,total_cholesterol>198.7 & trig>103.2)
+dim(sdys4)
+sdys4_g=glm(dyslipidemia~CRF,data = sdys4, family  = binomial(link = "logit"))
+summary(sdys4_g)
+confint(sdys4_g)
